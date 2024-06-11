@@ -29,6 +29,17 @@ app.post("/movies", async(request, response)=>{
     console.log(`Conteúdo enviado na requisição${request.body}`)
 
     try{
+
+        const movieWithSameTitle = await prisma.movie.findFirst({
+            where:{ 
+                title: { equals: title, mode: "insensitive" }
+            }
+        })
+
+        if(movieWithSameTitle){
+            return response.status(409).send({message:"filme duplicado"});
+        }
+
         await prisma.movie.create({
         data:{
             title,
@@ -40,7 +51,7 @@ app.post("/movies", async(request, response)=>{
     });
     }
     catch(error){
-        return response.status(500).send({message:"Erro ao cadastrar o filme"})
+        return response.status(500).send({message:"Erro ao cadastrar o filme"});
     }
     response.status(201).send();
 
