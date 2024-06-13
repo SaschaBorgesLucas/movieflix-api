@@ -59,7 +59,7 @@ app.post("/movies", async(request, response)=>{
 
 app.put("/movies/:id", async (request, response)=>{
     try{
-        const id = Number( request.params.id) ;
+        const id = Number( request.params.id);
         const movie = await prisma.movie.findUnique({where:{ id }});
         
         if ( !movie ){
@@ -77,6 +77,26 @@ app.put("/movies/:id", async (request, response)=>{
     catch (error)
     {
         return response.status(500).send({ message: "Falha ao atualizar o registro" });
+    }
+});
+
+app.delete("/movies/:id", async( request, response )=>{
+    try{
+        const id = Number(request.params.id);
+
+        const movie = await prisma.movie.findUnique({where:{ id }});
+            
+        if ( !movie ){
+
+            return response.status (404).send({ message: "Filme não encontrado" });
+
+        }
+
+        await prisma.movie.delete({where:{id}});
+        response.status(200);
+    }
+    catch(error){
+        return response.status(500).send({ message: "Falha ao deletar o registro" });
     }
 });
 
